@@ -2,6 +2,7 @@ import discord
 from is_vegan import *
 from can_be_vegan import *
 from discord.ext import commands
+from food_products import *
 
 help_command = commands.DefaultHelpCommand(
     no_category = 'Commands'
@@ -60,7 +61,7 @@ async def happycow(ctx, *location):
 @bot.command()
 async def suggest(ctx, *ingredent):
     '''
-    Suggest a non-vegan item!
+    Suggest a non-vegan ingredent!
     '''
     
     ingredent = combine_words(ingredent)
@@ -73,5 +74,43 @@ async def suggest(ctx, *ingredent):
     else:
         await ctx.send("Thank you for your suggestion, but we already have that in the data base!")
 
+@bot.command()
+async def find(ctx, *name_of_product):
+    '''
+    Find ID of a food product
+    '''
+
+    name_of_product = combine_words(name_of_product)
+    list_of_ids = find_id(name_of_product)
+
+    for ids in list_of_ids:
+        await ctx.send(f'ID:{ids[0]} Product: {ids[1]}')
+
+@bot.command()
+async def product(ctx, p_id):
+    ingredent = get_ingredents(int(p_id))
+    is_it_vegan = is_vegan_ingredient_list(ingredent)
+
+    if is_it_vegan:
+        await ctx.send(f'Totally plant powered!')
+    else:
+        flagged = contains_flagged_ingredients(ingredent)
+        if len(flagged) > 0:
+            
+            flagged_foods = ''
+            for i in flagged:
+                flagged_foods += f'{i}, '
+            flagged_foods = flagged_foods[:-2]
+
+            await ctx.send(f'May be vegan:\n Here are the possible non-vegan ingredents: {flagged_foods}')
+        else:
+            non_vegan_foods = contains_non_vegan_ingredients(ingredent)
+            send_str = ''
+
+            for i in non_vegan_foods:
+                send_str += f'{i}, '
+            send_str = send_str[:-2]
+            
+            await ctx.send(f'Not vegan...\nHere are the non-vegan ingredents: {send_str}')
 
 bot.run('ODI1MjUwMTg5ODgyNDI1Mzc1.YF7MIQ.XXCDR487df3jQSU1W-EhCIHj8CA')
