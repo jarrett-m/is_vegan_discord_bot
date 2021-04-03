@@ -26,12 +26,12 @@ def contains_non_vegan_ingredients(ingredients_to_check):
         '''if len(ingredent.split(" ")) > 1:
             for split_ingredent in ingredent.split(" "):
                 for non_veg in get_non_vegan_list():
-                    if split_ingredent in non_veg:
+                    if split_ingredent == non_veg:
                         return_list.append(split_ingredent)
                         break
         else:'''
         for non_veg in get_non_vegan_list():
-            if ingredent.lower().strip() == non_veg:
+            if ingredent == non_veg:
                 return_list.append(ingredent)
                 break
 
@@ -51,7 +51,7 @@ def is_vegan_ingredient_list(ingredients_to_check):
                         return False
         else:'''
         for non_vegan_list in get_non_vegan_list():
-            if ingredents.lower() in non_vegan_list:
+            if non_vegan_list == ingredents.lower():
                 return False
     
     return True

@@ -3,6 +3,7 @@ from is_vegan import *
 from can_be_vegan import *
 from discord.ext import commands
 from food_products import *
+from discord.ext import menus
 
 help_command = commands.DefaultHelpCommand(
     no_category = 'Commands'
@@ -15,12 +16,22 @@ bot = commands.Bot(
     description='100% vegan bot, powered by plants!',
     help_command= help_command,
     activity = activity
-    
-    
 )
 
-def combine_words(arg):
+class MySource(menus.ListPageSource):
+    def __init__(self, data):
+        super().__init__(data, per_page=8)
 
+    async def format_page(self, menu, entries):
+        offset = menu.current_page * self.per_page
+        send_str = '```' + '\n'.join(f'{i}. {v}' for i, v in enumerate(entries, start=offset)) + '```'
+
+        if send_str == '``````':
+            return 'no items found...'
+        
+        return send_str
+
+def combine_words(arg):
     if len(arg) > 1:
         return ' '.join(arg).lower()
     return str(arg[0]).lower()
@@ -31,17 +42,18 @@ async def vegan(ctx, *ingredient):
     '''
     Check if an ingredent is vegan
     '''
-    ingredent = combine_words(ingredent)
-    is_it_maybe_vegan = is_flagged_ingredient(ingredent)
-    is_it_vegan = is_vegan_ingredient(ingredent)
+
+    ingredient = combine_words(ingredient)
+    is_it_maybe_vegan = is_flagged_ingredient(ingredient)
+    is_it_vegan = is_vegan_ingredient(ingredient)
 
     if is_it_maybe_vegan:
-        await ctx.send(f"{ingredent}: can be vegan... :question:")
+        await ctx.send(f"{ingredient}: can be vegan... :question:")
     else:
         if is_it_vegan:
-            await ctx.send(f"{ingredent}: vegan! :white_check_mark:")
+            await ctx.send(f"{ingredient}: vegan! :white_check_mark:")
         else:
-            await ctx.send(f"{ingredent}: not vegan. :x:")
+            await ctx.send(f"{ingredient}: not vegan. :x:")
 
 @bot.command()
 async def happycow(ctx, *location):
@@ -81,30 +93,51 @@ async def find(ctx, *name_of_product):
     '''
 
     name_of_product = combine_words(name_of_product)
-    list_of_ids = find_id(name_of_product)
+    dict_of_ids = find_id(name_of_product)
+    contents_str = ''
+    counter = 1
+    contents = []
+    '''
+    for key in dict_of_ids:
+        if(counter == 5):
+            #contents_str += '```'
+            contents.append(contents_str)
+            #contents_str = '```'
+            counter = 1
+        else:
+            contents_str += f'ID:{key} | Product: {dict_of_ids[key]} \n'
+            counter += 1
+    '''
+    formatted = []
 
-    for ids in list_of_ids:
-        await ctx.send(f'ID:{ids[0]} Product: {ids[1]}')
+    for key, value in dict_of_ids.items():
+        formatted.append(f"ID:{key} | Product: {value}")
+
+    pages = menus.MenuPages(source=MySource(formatted), clear_reactions_after=True)
+    await pages.start(ctx)
+
+    
 
 @bot.command()
 async def product(ctx, p_id):
+    '''Enter product ID to see if it is vegan'''
     ingredent = get_ingredents(int(p_id))
     is_it_vegan = is_vegan_ingredient_list(ingredent)
+    flagged = contains_flagged_ingredients(ingredent)
 
-    if is_it_vegan:
+    if is_it_vegan == True and not len(flagged) > 0:
         await ctx.send(f'Totally plant powered!')
     else:
-        flagged = contains_flagged_ingredients(ingredent)
-        if len(flagged) > 0:
-            
+        non_vegan_foods = contains_non_vegan_ingredients(ingredent)
+        non_vegan_foods = mylist = list(dict.fromkeys(non_vegan_foods))
+        if len(flagged) > 0 and len(non_vegan_foods)  == 0:
             flagged_foods = ''
             for i in flagged:
                 flagged_foods += f'{i}, '
             flagged_foods = flagged_foods[:-2]
 
-            await ctx.send(f'May be vegan:\n Here are the possible non-vegan ingredents: {flagged_foods}')
+            await ctx.send(f'May be vegan:\nHere are the possible non-vegan ingredents: {flagged_foods}')
         else:
-            non_vegan_foods = contains_non_vegan_ingredients(ingredent)
             send_str = ''
 
             for i in non_vegan_foods:

@@ -16,3 +16,4 @@ def contains_flagged_ingredients(ingredients_to_check):
     If found returns a list with the can-be-vegan ingredients.
     '''
     return [i.strip().lower() for i in ingredients_to_check if i in get_can_be_vegan_list()]
+
