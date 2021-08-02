@@ -1,7 +1,5 @@
 import pandas as pd
-import time
 import re
-import requests
 from concurrent.futures import ThreadPoolExecutor as TPE
 
 foods = pd.read_csv('foods.csv')
@@ -9,7 +7,7 @@ foods['description'] = foods['description'].str.lower()
 
 def find_id(name):
     '''Input name of product to find the ID.'''
-    items = []
+
     '''for index, row in foods.iterrows():
         if name in str(row['description']).lower():
             items.append((index, row['description']))
