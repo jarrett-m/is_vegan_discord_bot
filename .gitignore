@@ -1,0 +1,10 @@
+/.vscode
+<<<<<<< HEAD
+
+/foods.csv
+foods.csv
+=======
+/__pycache__
+>>>>>>> parent of 470b59b (Cleanup)
+foods.csv
+*.csv
