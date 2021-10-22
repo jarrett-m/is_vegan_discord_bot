@@ -105,20 +105,6 @@ async def find(ctx, *name_of_product):
 
     name_of_product = combine_words(name_of_product)
     dict_of_ids = find_id(name_of_product)
-    contents_str = ''
-    counter = 1
-    contents = []
-    '''
-    for key in dict_of_ids:
-        if(counter == 5):
-            #contents_str += '```'
-            contents.append(contents_str)
-            #contents_str = '```'
-            counter = 1
-        else:
-            contents_str += f'ID:{key} | Product: {dict_of_ids[key]} \n'
-            counter += 1
-    '''
     formatted = []
 
     for key, value in dict_of_ids.items():

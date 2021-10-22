@@ -6,7 +6,7 @@ def is_flagged_ingredient(ingredient_to_check):
     If found return false, else return true.
     '''
     if(len(ingredient_to_check) == 0):
-        return true
+        return True
     ingredient_to_check = ingredient_to_check.strip().lower()
     return ingredient_to_check in get_can_be_vegan_list()
 

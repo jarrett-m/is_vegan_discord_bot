@@ -23,15 +23,8 @@ def contains_non_vegan_ingredients(ingredients_to_check):
     return_list = []
 
     for ingredent in ingredients_to_check:
-        '''if len(ingredent.split(" ")) > 1:
-            for split_ingredent in ingredent.split(" "):
-                for non_veg in get_non_vegan_list():
-                    if split_ingredent == non_veg:
-                        return_list.append(split_ingredent)
-                        break
-        else:'''
         for non_veg in get_non_vegan_list():
-            if ingredent == non_veg:
+            if non_veg in ingredent: #REPLACE WITH REGEX
                 return_list.append(ingredent)
                 break
 
@@ -44,14 +37,8 @@ def is_vegan_ingredient_list(ingredients_to_check):
     and checks them against the non-vegan list of ingredients.
     '''
     for ingredents in ingredients_to_check:
-        '''if len(ingredents.split(" ")) > 1:
-            for split_ingredents in ingredents.split(" "):
-                for non_vegan_list in get_non_vegan_list():
-                    if split_ingredents in non_vegan_list:
-                        return False
-        else:'''
         for non_vegan_list in get_non_vegan_list():
-            if non_vegan_list == ingredents.lower():
+            if non_vegan_list == ingredents.lower(): #REPLACE WITH REGEX
                 return False
     return True
 
